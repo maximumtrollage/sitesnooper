@@ -1,0 +1,2 @@
+Disallow: /webmasters/sitemaps/ping?
+Sitemap: https://www.google.com/sitemap.xml

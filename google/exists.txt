@@ -1,0 +1,4 @@
+http://google.com/robots.txt
+http://google.com/gmail
+http://google.com/domains
+http://google.com/sitemap.xml
