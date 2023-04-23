@@ -74,4 +74,4 @@ If you want a shit load of wordlists, check out the VACBAN thread you most likel
 
 # License
 
-SiteSnooper is licensed under the MIT license. See moore at [LICENSE](./LICENSE)
+SiteSnooper is licensed under the MIT license. See more at [LICENSE](./LICENSE)
