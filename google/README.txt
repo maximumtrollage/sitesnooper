@@ -10,7 +10,7 @@
 
     Site....: http://google.com
     Timeout.: 1
-    Wordlist: test_wordlist.txt
+    Wordlist: .\test_wordlist.txt
 
 ./exists.txt contains paths that, well, exist.
 The opposite for ./doesnt_exist.txt

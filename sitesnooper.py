@@ -4,9 +4,10 @@ import argparse
 import urllib.parse
 from pathlib import Path
 
-import requests
 import colorama
+import requests
 from colorama import Fore, Style
+from tqdm import tqdm
 
 colorama.init(autoreset=True)
 
@@ -115,20 +116,20 @@ def check_wordlist(site: str, wordlist_path: str, timeout):
     toFile(f"./{deUrl(site)}/exists.txt", "")
     toFile(f"./{deUrl(site)}/doesnt_exist.txt", "")
     with open(wordlist_path) as f:
-        for line in f:
-            line = line.strip()
-            if not line:
-                continue
+        wordlist = [line.strip() for line in f if line.strip()]
+        with tqdm(total=len(wordlist), bar_format="{desc}: {percentage:3.0f}%|{bar:100}{r_bar}", leave=False) as pbar:
+            for line in wordlist:
+                line = f"{site}/{line}"
 
-            line = f"{site}/{line}"
+                (success, content) = getSitePath(line, timeout=timeout)
 
-            (success, content) = getSitePath(line, timeout=timeout)
+                if success:
+                    toFile(f"./{deUrl(site)}/exists.txt", f"{line}\n", True)
+                    pbar.write(f"    {Fore.GREEN}exists: {Style.BRIGHT}{Fore.BLACK}{line}")
+                else:
+                    toFile(f"./{deUrl(site)}/doesnt_exist.txt", f"{line}\n", True)
 
-            if success:
-                toFile(f"./{deUrl(site)}/exists.txt", f"{line}\n", True)
-                print(f"    {Fore.GREEN}exists: {Style.BRIGHT}{Fore.BLACK}{line}")
-            else:
-                toFile(f"./{deUrl(site)}/doesnt_exist.txt", f"{line}\n", True)
+                pbar.update(1)
 
 
 def toFile(path, what, append: bool = False):
