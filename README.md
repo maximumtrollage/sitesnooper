@@ -59,7 +59,7 @@ Everything was logged to: ./google
 
 # Uhhhhhh
 
-Everything is outputted to: ./SITENAME
+Everything is outputted to: ./SITENAME \
 Here is a tree view:
 ```
 📂 - SITENAME
