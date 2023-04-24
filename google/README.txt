@@ -9,8 +9,9 @@
        "h" (79735) on VACBAN               |_|               
 
     Site....: http://google.com
-    Timeout.: 1
-    Wordlist: .\test_wordlist.txt
+    Timeout.: .5
+    Wordlist: test_wordlist.txt
+    Threads.: 10
 
 ./exists.txt contains paths that, well, exist.
 The opposite for ./doesnt_exist.txt
