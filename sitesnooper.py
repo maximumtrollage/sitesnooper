@@ -1,6 +1,7 @@
-#!/usr/bin/env python3
+#!/usr/bin/python3
 
 import argparse
+import concurrent.futures
 import urllib.parse
 from pathlib import Path
 
@@ -38,13 +39,21 @@ def getArgs() -> tuple[str, str]:
         help="pass in the path to a wordlist",
         required=True,
     )
+    parser.add_argument(
+        "--threads",
+        dest="threads",
+        help="define the number of threads to use. Default is 5",
+        type=int,
+        default=5
+    )
 
     args = parser.parse_args()
     site = args.site
     timeout = args.timeout
     wordlist = args.wordlist
+    threads = args.threads
 
-    return (site, timeout, wordlist)
+    return (site, timeout, wordlist, threads)
 
 
 def deUrl(site):
@@ -111,25 +120,32 @@ def getSitePath(site: str, timeout) -> tuple[bool, str]:
         return (False, f"Timeout must be an int/float, not {type(timeout).__name__}")
 
 
-def check_wordlist(site: str, wordlist_path: str, timeout):
+def check_site_path(path: str, timeout: int):
+    (success, content) = getSitePath(path, timeout=timeout)
+    return (path, success)
+
+def check_wordlist(site: str, wordlist_path: str, timeout: int, num_threads: int = 10):
     site = turnToUrl(site)
-    toFile(f"./{deUrl(site)}/exists.txt", "")
-    toFile(f"./{deUrl(site)}/doesnt_exist.txt", "")
+    exists_file = f"./{deUrl(site)}/exists.txt"
+    doesnt_exist_file = f"./{deUrl(site)}/doesnt_exist.txt"
+    toFile(exists_file, "")
+    toFile(doesnt_exist_file, "")
     with open(wordlist_path) as f:
         wordlist = [line.strip() for line in f if line.strip()]
         with tqdm(total=len(wordlist), bar_format="{desc}: {percentage:3.0f}%|{bar:100}{r_bar}", leave=False) as pbar:
-            for line in wordlist:
-                line = f"{site}/{line}"
+            with concurrent.futures.ThreadPoolExecutor(max_workers=num_threads) as executor:
+                futures = {executor.submit(check_site_path, f"{site}/{line}", timeout): line for line in wordlist}
+                for future in concurrent.futures.as_completed(futures):
+                    line = futures[future]
+                    path, success = future.result()
 
-                (success, content) = getSitePath(line, timeout=timeout)
+                    if success:
+                        toFile(exists_file, f"{path}\n", True)
+                        pbar.write(f"    {Fore.GREEN}exists: {Style.BRIGHT}{Fore.BLACK}{path}")
+                    else:
+                        toFile(doesnt_exist_file, f"{path}\n", True)
 
-                if success:
-                    toFile(f"./{deUrl(site)}/exists.txt", f"{line}\n", True)
-                    pbar.write(f"    {Fore.GREEN}exists: {Style.BRIGHT}{Fore.BLACK}{line}")
-                else:
-                    toFile(f"./{deUrl(site)}/doesnt_exist.txt", f"{line}\n", True)
-
-                pbar.update(1)
+                    pbar.update(1)
 
 
 def toFile(path, what, append: bool = False):
@@ -181,12 +197,13 @@ def printTitle():
 def main():
     printTitle()
 
-    site, timeout, wordlist = getArgs()
+    site, timeout, wordlist, threads = getArgs()
 
     print(
-        f"""    {Style.BRIGHT}Site....: {Fore.BLACK}{turnToUrl(site)}{Fore.WHITE}
+        f"""    {Style.BRIGHT}{Fore.WHITE}Site....: {Fore.BLACK}{turnToUrl(site)}{Fore.WHITE}
     Timeout.: {Fore.BLACK}{timeout}{Fore.WHITE}
-    Wordlist: {Fore.BLACK}{wordlist}
+    Wordlist: {Fore.BLACK}{wordlist}{Fore.WHITE}
+    Threads.: {Fore.BLACK}{threads}
 """
     )
 
@@ -216,7 +233,8 @@ def main():
         f"./{deUrl(site)}/README.txt",
         f"""    Site....: {turnToUrl(site)}
     Timeout.: {timeout}
-    Wordlist: {wordlist}\n\n./exists.txt contains paths that, well, exist.\nThe opposite for ./doesnt_exist.txt\n\n\nWhat was/wasn't found?\n""",
+    Wordlist: {wordlist}
+    Threads.: {threads}\n\n./exists.txt contains paths that, well, exist.\nThe opposite for ./doesnt_exist.txt\n\n\nWhat was/wasn't found?\n""",
         True,
     )
 
@@ -253,7 +271,7 @@ def main():
         print(f"{site} does not have a robots.txt!")
 
     print(f"{Style.BRIGHT}Checking wordlist: {wordlist}")
-    check_wordlist(site, wordlist, timeout=timeout)
+    check_wordlist(site, wordlist, timeout=timeout, num_threads=threads)
     print(f"\n{Style.BRIGHT}Done.")
     print(f"{Fore.CYAN}Everything was logged to: ./{deUrl(site)}")
 
