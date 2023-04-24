@@ -31,31 +31,28 @@ $ python3 .\sitesnooper.py -s google.com -t 1 -w test_wordlist.txt --threads 5
 
 Example output:
 ```
-   _____ _ _        _____
-  / ____(_) |      / ____|
- | (___  _| |_ ___| (___  _ __   ___   ___  _ __   ___ _ __
+   _____ _ _        _____                                   
+  / ____(_) |      / ____|                                  
+ | (___  _| |_ ___| (___  _ __   ___   ___  _ __   ___ _ __ 
   \___ \| | __/ _ \\___ \| '_ \ / _ \ / _ \| '_ \ / _ \ '__|
-  ____) | | ||  __/____) | | | | (_) | (_) | |_) |  __/ |
- |_____/|_|\__\___|_____/|_| |_|\___/ \___/| .__/ \___|_|
-    made by: maximumtrollage               | |
-       "h" (79735) on VACBAN               |_|
+  ____) | | ||  __/____) | | | | (_) | (_) | |_) |  __/ |   
+ |_____/|_|\__\___|_____/|_| |_|\___/ \___/| .__/ \___|_|   
+    made by: maximumtrollage               | |              
+       "h" (79735) on VACBAN               |_|               
 
     Site....: http://google.com
-    Timeout.: 1
+    Timeout.: .5
     Wordlist: test_wordlist.txt
+    Threads.: 10
 
-/robots.txt is too big! output located at ./google/robots.txt
-Found "sitemap" in /robots.txt:
-    Disallow: /webmasters/sitemaps/ping?
-    Sitemap: https://www.google.com/sitemap.xml
-Checking wordlist: test_wordlist.txt
-    exists: http://google.com/robots.txt
-    exists: http://google.com/gmail
-    exists: http://google.com/domains
-    exists: http://google.com/sitemap.xml
+./exists.txt contains paths that, well, exist.
+The opposite for ./doesnt_exist.txt
 
-Done.
-Everything was logged to: ./google
+
+What was/wasn't found?
+     was: /robots.txt
+     was: /sitemap.txt
+
 ```
 
 # Uhhhhhh
