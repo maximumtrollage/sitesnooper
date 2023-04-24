@@ -7,8 +7,8 @@ As well as `./test_wordlist.txt` for google.
 
 # Usage
 
-```
-sitesnooper.py [-h] -s SITE -t TIMEOUT -w WORDLIST
+```             
+usage: sitesnooper.py [-h] -s SITE -t TIMEOUT -w WORDLIST [--threads THREADS]
 
 options:
   -h, --help            show this help message and exit
@@ -17,6 +17,7 @@ options:
                         connection timeout in seconds
   -w WORDLIST, --wordlist WORDLIST
                         pass in the path to a wordlist
+  --threads THREADS     define the number of threads to use. Default is 5
 ```
 
 Example:
@@ -25,7 +26,7 @@ $ pip3 install -r requirements.txt
 # or
 $ python3 -m pip install -r requirements.txt
 # then
-$ python3 .\sitesnooper.py -s google.com -t 1 -w test_wordlist.txt
+$ python3 .\sitesnooper.py -s google.com -t 1 -w test_wordlist.txt --threads 5
 ```
 
 Example output:
